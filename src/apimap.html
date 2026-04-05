@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Maps Embed Generator</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 700px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            background-color: #f9fafb;
+            color: #1f2937;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-bottom: 1rem;
+        }
+        button {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #1d4ed8;
+        }
+        textarea {
+            width: 100%;
+            height: 120px;
+            margin-top: 10px;
+            font-family: monospace;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            box-sizing: border-box;
+            background-color: #f3f4f6;
+            resize: vertical;
+        }
+        .preview-container {
+            margin-top: 20px;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            background: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 450px;
+        }
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.5rem;
+        }
+        .hint {
+            font-size: 13px;
+            color: #6b7280;
+            margin-top: -10px;
+            margin-bottom: 15px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Map Embed Code Generator</h2>
+        <p>Enter an address or paste a Google Maps link to generate the HTML iframe code.</p>
+        
+        <input type="text" id="addressInput" placeholder="Paste link (e.g., https://www.google.com/maps/place/...) or type address">
+        <span class="hint">Supports plain addresses, standard URLs, and dropped-pin coordinate URLs.</span>
+        
+        <button onclick="generateEmbed()">Generate Code</button>
+        
+        <div class="header-row">
+            <h3 style="margin: 0;">Your Embed Code:</h3>
+            <button onclick="copyCode()" style="padding: 8px 16px; font-size: 14px; background-color: #10b981;">Copy Code</button>
+        </div>
+        <textarea id="embedCodeOutput" readonly placeholder="Your <iframe> code will appear here..."></textarea>
+
+        <h3 style="margin-top: 2rem;">Live Preview:</h3>
+        <div class="preview-container" id="mapPreview">
+            <p style="color: #6b7280;">Map preview will load here</p>
+        </div>
+    </div>
+
+    <script>
+        function parseInput(input) {
+            input = input.trim();
+            
+            // Check if it's a URL
+            if (input.startsWith('http') || input.startsWith('www.') || input.includes('google.com')) {
+                try {
+                    // Priority 1: Check for exact coordinates in the data parameters (!3d and !4d)
+                    // This perfectly handles the specific URL you provided
+                    const latMatch = input.match(/!3d(-?\d+\.\d+)/);
+                    const lngMatch = input.match(/!4d(-?\d+\.\d+)/);
+                    if (latMatch && lngMatch) {
+                        return `${latMatch[1]},${lngMatch[1]}`;
+                    }
+
+                    // Priority 2: Check for the @lat,lng format in the URL
+                    const coordMatch = input.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+                    if (coordMatch) {
+                         return `${coordMatch[1]},${coordMatch[2]}`;
+                    }
+
+                    // Priority 3: Extract place name from /place/ or /search/ URLs
+                    const placeMatch = input.match(/\/(?:place|search)\/([^/@?]+)/);
+                    if (placeMatch && placeMatch[1]) {
+                        return decodeURIComponent(placeMatch[1].replace(/\+/g, ' '));
+                    }
+                    
+                    // Priority 4: Extract from a standard search query (?q=)
+                    const urlObj = new URL(input.startsWith('http') ? input : 'https://' + input);
+                    const qParam = urlObj.searchParams.get('q');
+                    if (qParam) {
+                        return decodeURIComponent(qParam.replace(/\+/g, ' '));
+                    }
+                    
+                    alert("Could not extract a precise location from this link. Try typing the address manually.");
+                    return null;
+                } catch (e) {
+                    console.log("URL parsing failed, falling back to string processing.");
+                }
+            }
+            
+            // If it's not a URL, return the plain text
+            return input;
+        }
+
+        function generateEmbed() {
+            const rawInput = document.getElementById('addressInput').value;
+            
+            if (!rawInput) {
+                alert("Please enter an address or paste a link first.");
+                return;
+            }
+
+            const finalLocation = parseInput(rawInput);
+            if (!finalLocation) return; 
+
+            // Encode for the embed URL
+            const encodedAddress = encodeURIComponent(finalLocation);
+            
+            // Construct the Google Maps URL
+            const mapUrl = `https://maps.google.com/maps?q=${encodedAddress}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+            
+            // Build the final <iframe> HTML string
+            const iframeCode = `<iframe src="${mapUrl}" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
+            
+            // Update the UI
+            document.getElementById('embedCodeOutput').value = iframeCode;
+            document.getElementById('mapPreview').innerHTML = iframeCode;
+        }
+
+        function copyCode() {
+            const codeOutput = document.getElementById('embedCodeOutput');
+            if (!codeOutput.value) {
+                alert("Nothing to copy! Generate the code first.");
+                return;
+            }
+            
+            navigator.clipboard.writeText(codeOutput.value).then(() => {
+                alert("Embed code copied to clipboard!");
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+        }
+    </script>
+</body>
+</html>

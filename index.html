@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <title>Homizgo - College Student Rental Platform</title>
+    <meta name="description" content="A non-profit rental platform designed for college students to connect with landlords and PG owners." />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f0f5ff" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0c1220" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/png" href="/assets/logo.png" />
+    <script>
+      (function() {
+        const apiKey = "%VITE_GOOGLE_MAPS_API_KEY%";
+        if (apiKey && apiKey !== "%" + "VITE_GOOGLE_MAPS_API_KEY" + "%") {
+          const script = document.createElement('script');
+          script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
+          script.async = true;
+          script.defer = true;
+          document.head.appendChild(script);
+        } else {
+          console.warn('⚠️ Google Maps API Key is missing. Maps will not load.');
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
