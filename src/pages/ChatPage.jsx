@@ -118,7 +118,7 @@ function MessageBubble({ msg, isOwn, user, onEdit, onDelete, onResend }) {
         </div>
       )}
 
-      <div className={`max-w-[75%] transition-opacity ${isSending ? 'opacity-60' : isFailed ? 'opacity-50' : 'opacity-100'}`}>
+      <div className={`max-w-[85%] sm:max-w-[75%] transition-opacity ${isSending ? 'opacity-60' : isFailed ? 'opacity-50' : 'opacity-100'}`}>
         {/* Inline edit mode */}
         {editing ? (
           <div className="rounded-2xl rounded-br-lg border-2 border-primary/40 bg-card p-2 shadow-sm">
@@ -564,8 +564,8 @@ export default function ChatPage() {
   )
 
   return (
-    <div className="flex flex-col" style={{ height: '100dvh' }}>
-      <Navbar />
+    <div className="flex flex-col overflow-hidden" style={{ height: '100dvh' }}>
+      <Navbar hideBottomNav={!!activeConversation} />
       <div className="flex min-h-0 flex-1 overflow-hidden">
 
         {/* ── Sidebar ── */}
@@ -725,7 +725,7 @@ export default function ChatPage() {
               </div>
 
               {/* Input */}
-              <div className="border-t bg-card px-4 py-3">
+              <div className="border-t bg-card px-4 py-3 pb-4 sm:pb-3">
                 <form onSubmit={handleSend} className="flex items-end gap-2">
                   <div className="flex-1 rounded-2xl border bg-background px-4 py-2.5 focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/10 transition-all">
                     <textarea

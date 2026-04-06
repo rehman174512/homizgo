@@ -33,14 +33,14 @@ export function CookieConsent() {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
           transition={{ type: 'spring', damping: 20, stiffness: 100 }}
-          className="fixed bottom-6 left-1/2 z-[100] w-[calc(100%-2rem)] max-w-2xl -translate-x-1/2"
+          className="fixed bottom-4 left-1/2 z-[100] w-[92%] max-w-2xl -translate-x-1/2 sm:bottom-6 sm:w-full"
         >
-          <div className="relative overflow-hidden rounded-2xl border border-border bg-card/80 p-6 shadow-2xl backdrop-blur-xl md:p-8">
+          <div className="relative overflow-hidden rounded-2xl border border-border bg-card/80 p-4 shadow-2xl backdrop-blur-xl sm:p-8">
             <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-primary/10 blur-2xl" />
             
-            <div className="relative flex flex-col items-start gap-6 md:flex-row md:items-center">
-              <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                <Cookie className="h-6 w-6" />
+            <div className="relative flex flex-col items-start gap-4 md:flex-row md:items-center md:gap-6">
+              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary sm:h-12 sm:w-12">
+                <Cookie className="h-5 w-5 sm:h-6 sm:w-6" />
               </div>
 
               <div className="flex-1 space-y-2">

@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { motion, AnimatePresence } from 'framer-motion'
 import { gsap } from 'gsap'
 import {
   getCurrentUser, getPropertyById, toggleInterest, getOrCreateThread,
@@ -419,16 +420,41 @@ export default function PropertyDetailPage() {
         </div>
 
         {/* Main image */}
-        <div className="relative mb-4 overflow-hidden rounded-2xl bg-secondary" style={{ height: '400px' }}>
+        <div className="relative mb-4 overflow-hidden rounded-2xl bg-secondary h-[300px] sm:h-[400px] md:h-[500px]">
           {property.images && property.images.length > 0 ? (
-            <img
-              src={property.images[selectedImage]}
-              alt={property.title}
-              className="h-full w-full object-cover"
-            />
+            <AnimatePresence mode="wait">
+              <motion.img
+                key={selectedImage}
+                src={property.images[selectedImage]}
+                alt={property.title}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.7}
+                onDragEnd={(e, { offset }) => {
+                  const swipe = offset.x
+                  if (swipe < -50) {
+                    setSelectedImage((prev) => (prev + 1) % property.images.length)
+                  } else if (swipe > 50) {
+                    setSelectedImage((prev) => (prev - 1 + property.images.length) % property.images.length)
+                  }
+                }}
+                className="h-full w-full object-cover cursor-grab active:cursor-grabbing touch-none"
+              />
+            </AnimatePresence>
           ) : (
             <div className="flex h-full items-center justify-center">
               <Home className="h-24 w-24 text-primary/20" />
+            </div>
+          )}
+          
+          {/* Counter Overlay */}
+          {property.images && property.images.length > 1 && (
+            <div className="absolute bottom-4 right-4 rounded-full bg-black/50 px-3 py-1 text-[10px] font-bold text-white backdrop-blur-md sm:text-xs">
+              {selectedImage + 1} / {property.images.length}
             </div>
           )}
         </div>

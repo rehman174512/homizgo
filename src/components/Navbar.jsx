@@ -20,7 +20,7 @@ import { createClient } from '@/lib/supabase'
 
 const supabase = createClient()
 
-export function Navbar() {
+export function Navbar({ hideBottomNav = false }) {
   const [user, setUser] = useState(null)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
@@ -263,6 +263,19 @@ export function Navbar() {
               </div>
             )}
 
+            {user && (
+              <Link
+                to="/profile"
+                className="relative flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-bold shadow-sm transition-transform active:scale-95 md:hidden"
+                onClick={() => setMobileOpen(false)}
+              >
+                {user.name.charAt(0)}
+                {(!user.phone || (!user.gender && (user.role === 'user' || user.role === 'student'))) && (
+                  <span className="absolute -top-0.5 -right-0.5 flex h-3 w-3 rounded-full bg-destructive border-2 border-background"></span>
+                )}
+              </Link>
+            )}
+
             <Button
               variant="ghost"
               size="icon"
@@ -339,7 +352,7 @@ export function Navbar() {
         )}
       </header>
 
-      {user && (
+      {user && !hideBottomNav && (
         <nav
           className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur-xl md:hidden"
           role="navigation"

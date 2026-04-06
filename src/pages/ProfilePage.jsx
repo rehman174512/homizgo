@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
-  User, Mail, Phone, Shield, Pencil, Trash2, KeyRound,
-  Save, X, AlertTriangle, CheckCircle2, Eye, EyeOff, ExternalLink,
+  User, Mail, Phone, Shield, Pencil, Trash2,
+  Save, X, AlertTriangle, CheckCircle2,
 } from 'lucide-react'
 
 export default function ProfilePage() {
@@ -26,12 +26,6 @@ export default function ProfilePage() {
   const [editGender, setEditGender] = useState('')
   const [saving, setSaving] = useState(false)
 
-  // Password state
-  const [showPasswordForm, setShowPasswordForm] = useState(false)
-  const [newPassword, setNewPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [showPwd, setShowPwd] = useState(false)
-  const [pwdLoading, setPwdLoading] = useState(false)
 
   // Delete state
   const [showDeleteModal, setShowDeleteModal] = useState(false)
@@ -104,24 +98,6 @@ export default function ProfilePage() {
     }
   }
 
-  const handleChangePassword = async (e) => {
-    e.preventDefault()
-    if (newPassword.length < 6) { showToast('Password must be at least 6 characters.', 'error'); return }
-    if (newPassword !== confirmPassword) { showToast('Passwords do not match.', 'error'); return }
-    setPwdLoading(true)
-    try {
-      const { error } = await supabase.auth.updateUser({ password: newPassword })
-      if (error) throw error
-      setShowPasswordForm(false)
-      setNewPassword('')
-      setConfirmPassword('')
-      showToast('Password updated!')
-    } catch (err) {
-      showToast(err.message || 'Failed to change password.', 'error')
-    } finally {
-      setPwdLoading(false)
-    }
-  }
 
   const handleDeleteAccount = async () => {
     setDeleteLoading(true)
@@ -294,55 +270,6 @@ export default function ProfilePage() {
           )}
         </div>
 
-
-        {/* Security Section */}
-        <div className="mt-4 rounded-2xl border bg-card p-6 shadow-sm space-y-4">
-          <h3 className="font-heading text-lg font-semibold text-card-foreground">Security</h3>
-
-          {!showPasswordForm ? (
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <Button variant="outline" className="rounded-xl flex-1" onClick={() => setShowPasswordForm(true)}>
-                <KeyRound className="mr-1.5 h-4 w-4" />
-                Change Password
-              </Button>
-              <Button variant="outline" className="rounded-xl flex-1" onClick={() => navigate('/forgot-password')}>
-                🔁 Forgot Password
-              </Button>
-            </div>
-          ) : (
-            <form onSubmit={handleChangePassword} className="space-y-4">
-              <div>
-                <Label htmlFor="new-password">New Password</Label>
-                <div className="relative mt-1.5">
-                  <Input
-                    id="new-password"
-                    name="new-password"
-                    type={showPwd ? 'text' : 'password'}
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    placeholder="At least 6 characters"
-                    className="rounded-xl pr-10"
-                  />
-                  <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2" onClick={() => setShowPwd(!showPwd)}>
-                    {showPwd ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}
-                  </button>
-                </div>
-              </div>
-              <div>
-                <Label htmlFor="confirm-password">Confirm Password</Label>
-                <Input id="confirm-password" name="confirm-password" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Repeat new password" className="mt-1.5 rounded-xl" />
-              </div>
-              <div className="flex gap-2">
-                <Button type="submit" className="rounded-xl" disabled={pwdLoading}>
-                  {pwdLoading ? 'Updating…' : 'Update Password'}
-                </Button>
-                <Button type="button" variant="outline" className="rounded-xl" onClick={() => { setShowPasswordForm(false); setNewPassword(''); setConfirmPassword('') }}>
-                  Cancel
-                </Button>
-              </div>
-            </form>
-          )}
-        </div>
 
         {/* Danger Zone */}
         <div className="mt-4 rounded-2xl border border-destructive/20 bg-destructive/5 p-6 shadow-sm">
