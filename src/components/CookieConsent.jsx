@@ -28,14 +28,15 @@ export function CookieConsent() {
   return (
     <AnimatePresence>
       {isVisible && (
-        <motion.div
-          initial={{ y: 100, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: 100, opacity: 0 }}
-          transition={{ type: 'spring', damping: 20, stiffness: 100 }}
-          className="fixed bottom-4 left-1/2 z-[100] w-[92%] max-w-2xl -translate-x-1/2 sm:bottom-6 sm:w-full"
-        >
-          <div className="relative overflow-hidden rounded-2xl border border-border bg-card/80 p-4 shadow-2xl backdrop-blur-xl sm:p-8">
+        <div className="fixed inset-x-0 bottom-0 z-[100] flex justify-center p-4 sm:bottom-6">
+          <motion.div
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            transition={{ type: 'spring', damping: 20, stiffness: 100 }}
+            className="w-full max-w-2xl"
+          >
+            <div className="relative overflow-hidden rounded-2xl border border-border bg-card/80 p-5 shadow-2xl backdrop-blur-xl sm:p-8">
             <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-primary/10 blur-2xl" />
             
             <div className="relative flex flex-col items-start gap-4 md:flex-row md:items-center md:gap-6">
@@ -80,7 +81,8 @@ export function CookieConsent() {
             </button>
           </div>
         </motion.div>
-      )}
-    </AnimatePresence>
+      </div>
+    )}
+  </AnimatePresence>
   )
 }

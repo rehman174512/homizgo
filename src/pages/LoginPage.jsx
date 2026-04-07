@@ -28,9 +28,9 @@ export default function LoginPage() {
       try {
         const current = await getCurrentUser()
         if (active && current) {
-          if (current.role === 'landlord') navigate('/dashboard/landlord')
-          else if (current.role === 'pgowner') navigate('/dashboard/pgowner')
-          else navigate('/dashboard/user')
+          if (current.role === 'landlord') navigate('/dashboard/landlord', { replace: true })
+          else if (current.role === 'pgowner') navigate('/dashboard/pgowner', { replace: true })
+          else navigate('/dashboard/user', { replace: true })
         }
       } catch (_) {
         // Session check failed silently — user stays on login

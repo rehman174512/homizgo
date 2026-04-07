@@ -53,9 +53,9 @@ export default function SelectRolePage() {
 
       if (updateErr) throw updateErr
 
-      if (selectedRole === 'landlord') navigate('/dashboard/landlord')
-      else if (selectedRole === 'pgowner') navigate('/dashboard/pgowner')
-      else navigate('/dashboard/user')
+      if (selectedRole === 'landlord') navigate('/dashboard/landlord', { replace: true })
+      else if (selectedRole === 'pgowner') navigate('/dashboard/pgowner', { replace: true })
+      else navigate('/dashboard/user', { replace: true })
     } catch (err) {
       setError(err.message || 'Something went wrong. Please try again.')
     } finally {

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { signInWithGoogle } from '@/lib/authService'
+import { getCurrentUser } from '@/lib/store'
 import SEO from '@/components/SEO'
 import { Navbar } from '@/components/Navbar'
 import { Button } from '@/components/ui/button'
@@ -30,6 +31,24 @@ export default function RegisterPage() {
   });
 
   const isLockedOut = Date.now() < lockoutUntil;
+
+  useEffect(() => {
+    let active = true
+    async function checkUser() {
+      try {
+        const current = await getCurrentUser()
+        if (active && current) {
+          if (current.role === 'landlord') navigate('/dashboard/landlord', { replace: true })
+          else if (current.role === 'pgowner') navigate('/dashboard/pgowner', { replace: true })
+          else navigate('/dashboard/user', { replace: true })
+        }
+      } catch (_) {
+        // Session check failed — user stays on register
+      }
+    }
+    checkUser()
+    return () => { active = false }
+  }, [navigate])
 
   useEffect(() => {
     // If locked out, set a timer to automatically re-enable the form
