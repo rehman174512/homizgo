@@ -14,6 +14,7 @@ import {
   UserCircle,
   ArrowRight,
   UserPlus,
+  AlertTriangle,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase'
@@ -25,6 +26,7 @@ export function Navbar({ hideBottomNav = false }) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
   const [hasNewMessage, setHasNewMessage] = useState(() => {
     return localStorage.getItem('homizgo_unread_chat') === 'true'
   })
@@ -150,6 +152,21 @@ export function Navbar({ hideBottomNav = false }) {
     }
   }, [user, pathname])
 
+  const handleLogoutClick = () => {
+    setShowLogoutConfirm(true)
+  }
+
+  const handleConfirmLogout = async () => {
+    await setCurrentUser(null)
+    setUser(null)
+    setShowLogoutConfirm(false)
+    navigate('/')
+  }
+
+  const handleCancelLogout = () => {
+    setShowLogoutConfirm(false)
+  }
+
   const handleLogout = async () => {
     await setCurrentUser(null)
     setUser(null)
@@ -244,7 +261,7 @@ export function Navbar({ hideBottomNav = false }) {
                   </span>
                   <UserCircle className="h-3.5 w-3.5 text-muted-foreground" />
                 </Link>
-                <Button variant="ghost" size="sm" className="rounded-xl" onClick={handleLogout}>
+                <Button variant="ghost" size="sm" className="rounded-xl" onClick={handleLogoutClick}>
                   <LogOut className="mr-1.5 h-4 w-4" />
                   Logout
                 </Button>
@@ -327,7 +344,7 @@ export function Navbar({ hideBottomNav = false }) {
                       variant="outline"
                       size="sm"
                       className="mt-2 w-full rounded-xl"
-                      onClick={() => { handleLogout(); setMobileOpen(false) }}
+                      onClick={() => { handleLogoutClick(); setMobileOpen(false) }}
                     >
                       <LogOut className="mr-1.5 h-4 w-4" />
                       Logout
@@ -377,7 +394,7 @@ export function Navbar({ hideBottomNav = false }) {
               </Link>
             ))}
             <button
-              onClick={handleLogout}
+              onClick={handleLogoutClick}
               className="flex flex-col items-center gap-1 rounded-xl px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors"
             >
               <LogOut className="h-5 w-5" />
@@ -385,6 +402,31 @@ export function Navbar({ hideBottomNav = false }) {
             </button>
           </div>
         </nav>
+      )}
+
+      {/* Logout Confirmation Dialog */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={handleCancelLogout}>
+          <div className="bg-card border border-border rounded-2xl p-6 w-full max-w-[360px] shadow-2xl" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-destructive/10 flex items-center justify-center flex-shrink-0">
+                <AlertTriangle className="w-5 h-5 text-destructive" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Confirm Logout</h3>
+                <p className="text-sm text-muted-foreground">Are you sure you want to log out?</p>
+              </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <Button variant="outline" className="flex-1 rounded-xl" onClick={handleCancelLogout}>
+                Cancel
+              </Button>
+              <Button variant="destructive" className="flex-1 rounded-xl" onClick={handleConfirmLogout}>
+                Logout
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
     </>
   )

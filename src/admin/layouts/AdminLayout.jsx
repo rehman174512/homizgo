@@ -35,7 +35,7 @@ export default function AdminLayout({ pendingCount = 0, unreadCount = 0 }) {
   return (
     <AdminGuard>
       {({ user, logout }) => (
-        <div className="flex h-screen bg-background overflow-hidden">
+        <div className="flex h-screen bg-background overflow-hidden relative">
           <AdminSidebar pendingCount={pendingCount} unreadCount={unreadCount} />
           <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
             <AdminTopbar user={user} onLogout={logout} />
