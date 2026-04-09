@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import SEO from '@/components/SEO'
 import { Navbar } from '@/components/Navbar'
 import { PropertyCard } from '@/components/PropertyCard'
-import { getProperties, getCurrentUser } from '@/lib/store'
+import { getProperties } from '@/lib/store'
 import {
   Building2, Search, Shield, Users, Heart, ArrowRight, GraduationCap, Handshake,
   Star, MapPin, MessageSquare, CheckCircle2, Quote, ChevronRight, Zap,
@@ -40,25 +40,8 @@ export default function HomePage() {
   const pageRef = useRef(null)
   const featuresRef = useRef(null)
   const listingsRef = useRef(null)
-  const navigate = useNavigate()
 
-  useEffect(() => {
-    let active = true
-    async function checkUser() {
-      try {
-        const current = await getCurrentUser()
-        if (active && current) {
-          if (current.role === 'landlord') navigate('/dashboard/landlord', { replace: true })
-          else if (current.role === 'pgowner') navigate('/dashboard/pgowner', { replace: true })
-          else navigate('/dashboard/user', { replace: true })
-        }
-      } catch (_) {
-        // Session check failed — stay on home
-      }
-    }
-    checkUser()
-    return () => { active = false }
-  }, [navigate])
+
 
   useEffect(() => {
     let active = true
