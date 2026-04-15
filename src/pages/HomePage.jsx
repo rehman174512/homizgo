@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import SEO from '@/components/SEO'
 import { Navbar } from '@/components/Navbar'
 import { PropertyCard } from '@/components/PropertyCard'
-import { getProperties, getCurrentUser } from '@/lib/store'
+import { getProperties } from '@/lib/store'
 import {
   Building2, Search, Shield, Users, Heart, ArrowRight, GraduationCap, Handshake,
   Star, MapPin, MessageSquare, CheckCircle2, Quote, ChevronRight, Zap, X, LogIn, UserPlus,
