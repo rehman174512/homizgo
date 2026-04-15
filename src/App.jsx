@@ -23,20 +23,15 @@ const ProfilePage = lazy(() => import('./pages/ProfilePage'))
 const TermsPage = lazy(() => import('./pages/TermsPage'))
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage'))
 
-// ── Admin Panel — LOCAL ONLY (guarded by VITE_ENABLE_ADMIN env var) ──────────
-// src/admin/ is in .gitignore and never pushed to GitHub.
-// To enable locally, add VITE_ENABLE_ADMIN=true to your .env file.
-const isAdminEnabled = import.meta.env.VITE_ENABLE_ADMIN === 'true'
-
-const AdminLoginPage        = isAdminEnabled ? lazy(() => import('./admin/pages/AdminLoginPage'))        : null
-const AdminPinPage          = isAdminEnabled ? lazy(() => import('./admin/pages/AdminPinPage'))          : null
-const AdminAuthCallbackPage = isAdminEnabled ? lazy(() => import('./admin/pages/AdminAuthCallbackPage')) : null
-const AdminLayout           = isAdminEnabled ? lazy(() => import('./admin/layouts/AdminLayout'))         : null
-const AdminDashboardPage    = isAdminEnabled ? lazy(() => import('./admin/pages/AdminDashboardPage'))    : null
-const AdminPropertiesPage   = isAdminEnabled ? lazy(() => import('./admin/pages/AdminPropertiesPage'))   : null
-const AdminChatsPage        = isAdminEnabled ? lazy(() => import('./admin/pages/AdminChatsPage'))        : null
-const AdminSettingsPage     = isAdminEnabled ? lazy(() => import('./admin/pages/AdminSettingsPage'))     : null
-
+// ── Admin Panel ──────────────────────────────────────────────────────────────
+const AdminLoginPage = lazy(() => import('./admin/pages/AdminLoginPage'))
+const AdminPinPage = lazy(() => import('./admin/pages/AdminPinPage'))
+const AdminAuthCallbackPage = lazy(() => import('./admin/pages/AdminAuthCallbackPage'))
+const AdminLayout = lazy(() => import('./admin/layouts/AdminLayout'))
+const AdminDashboardPage = lazy(() => import('./admin/pages/AdminDashboardPage'))
+const AdminPropertiesPage = lazy(() => import('./admin/pages/AdminPropertiesPage'))
+const AdminChatsPage = lazy(() => import('./admin/pages/AdminChatsPage'))
+const AdminSettingsPage = lazy(() => import('./admin/pages/AdminSettingsPage'))
 
 export default function App() {
   const [appLoading, setAppLoading] = useState(true)
@@ -115,19 +110,17 @@ export default function App() {
               <Route path="/terms" element={<TermsPage />} />
               <Route path="/privacy" element={<PrivacyPage />} />
 
-              {/* ── Admin Panel routes (LOCAL ONLY) ────────────────────── */}
-              {isAdminEnabled && AdminLoginPage && (<>
-                <Route path="/admin/login"         element={<AdminLoginPage />} />
-                <Route path="/admin/pin"            element={<AdminPinPage />} />
-                <Route path="/admin/auth-callback"  element={<AdminAuthCallbackPage />} />
-                <Route path="/admin" element={<AdminLayout />}>
-                  <Route index              element={<AdminDashboardPage />} />
-                  <Route path="dashboard"   element={<AdminDashboardPage />} />
-                  <Route path="properties"  element={<AdminPropertiesPage />} />
-                  <Route path="chats"       element={<AdminChatsPage />} />
-                  <Route path="settings"    element={<AdminSettingsPage />} />
-                </Route>
-              </>)}
+              {/* ── Admin Panel routes ─────────────────────────────────── */}
+              <Route path="/admin/login" element={<AdminLoginPage />} />
+              <Route path="/admin/pin" element={<AdminPinPage />} />
+              <Route path="/admin/auth-callback" element={<AdminAuthCallbackPage />} />
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<AdminDashboardPage />} />
+                <Route path="dashboard" element={<AdminDashboardPage />} />
+                <Route path="properties" element={<AdminPropertiesPage />} />
+                <Route path="chats" element={<AdminChatsPage />} />
+                <Route path="settings" element={<AdminSettingsPage />} />
+              </Route>
             </Routes>
           </Suspense>
         </BrowserRouter>
