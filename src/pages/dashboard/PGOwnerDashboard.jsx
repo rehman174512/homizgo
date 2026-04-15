@@ -142,6 +142,12 @@ export default function PGOwnerDashboard() {
   const totalCapacity = properties.reduce((s, p) => s + (p.totalCapacity || 0), 0)
   const occupancyPercent = totalCapacity > 0 ? Math.round((totalOccupants / totalCapacity) * 100) : 0
 
+  const getOccupancyColor = (percent) => {
+    if (percent >= 90) return 'bg-destructive'
+    if (percent >= 70) return 'bg-orange-500'
+    return 'bg-primary'
+  }
+
   if (!profileReady || !user) return null
 
   return (
@@ -200,8 +206,11 @@ export default function PGOwnerDashboard() {
                   </div>
                 </div>
                 {stat.extra && (
-                  <div className="mt-3 h-1.5 w-full rounded-full bg-secondary">
-                    <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${occupancyPercent}%` }} />
+                  <div className="mt-3 h-1.5 w-full rounded-full bg-secondary overflow-hidden">
+                    <div 
+                      className={`h-full rounded-full transition-all duration-500 ${getOccupancyColor(occupancyPercent)}`} 
+                      style={{ width: `${Math.min(occupancyPercent, 100)}%` }} 
+                    />
                   </div>
                 )}
               </div>
@@ -304,7 +313,17 @@ export default function PGOwnerDashboard() {
                     <div className="mt-2 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                       <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{prop.location}</span>
                       <span className="flex items-center gap-1"><IndianRupee className="h-3.5 w-3.5" />{prop.price.toLocaleString('en-IN')}/{prop.rentDuration?.toLowerCase()}</span>
-                      <span className="flex items-center gap-1"><Users className="h-3.5 w-3.5" />{prop.currentOccupants}/{prop.totalCapacity} occupants</span>
+                      <div className="flex flex-col gap-1.5">
+                        <span className="flex items-center gap-1"><Users className="h-3.5 w-3.5" />{prop.currentOccupants}/{prop.totalCapacity} occupants</span>
+                        {prop.totalCapacity > 0 && (
+                          <div className="h-1 w-24 rounded-full bg-secondary overflow-hidden">
+                            <div 
+                              className={`h-full rounded-full transition-all ${getOccupancyColor(Math.round((prop.currentOccupants / prop.totalCapacity) * 100))}`}
+                              style={{ width: `${Math.min(Math.round((prop.currentOccupants / prop.totalCapacity) * 100), 100)}%` }}
+                            />
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-2">

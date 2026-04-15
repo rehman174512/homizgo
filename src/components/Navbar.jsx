@@ -181,15 +181,15 @@ export function Navbar({ hideBottomNav = false }) {
         : '/dashboard/user'
     : null
 
-  const navLinks = [
-    { href: '/', label: 'Home', icon: Home },
-    ...(user
-      ? [
-          { href: dashboardLink, label: 'Dashboard', icon: LayoutDashboard },
-          { href: '/chat', label: 'Chat', icon: MessageSquare, badge: hasNewMessage },
-        ]
-      : []),
-  ]
+  const navLinks = user
+    ? [
+        { href: dashboardLink, label: 'Dashboard', icon: LayoutDashboard },
+        { href: '/', label: 'Home', icon: Home },
+        { href: '/chat', label: 'Chat', icon: MessageSquare, badge: hasNewMessage },
+      ]
+    : [
+        { href: '/', label: 'Home', icon: Home },
+      ]
 
   return (
     <>

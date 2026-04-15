@@ -84,12 +84,27 @@ export default function ProfilePage() {
       const updatedUser = { ...user, name: editName.trim(), phone: editPhone.trim(), gender: editGender }
       setUser(updatedUser)
       setEditing(false)
+
+      // Clear any incomplete-profile banner
+      setIncompleteFields([])
+      sessionStorage.removeItem('homizgo_incomplete_fields')
+
       showToast('Profile updated successfully!')
-      
+
       // Notify Navbar to update in current tab
       window.dispatchEvent(new CustomEvent('homizgo-user-updated', { detail: updatedUser }))
       // Sync other tabs
       syncChannel.postMessage({ type: 'PROFILE_UPDATED' })
+
+      // If user arrived from an incomplete-profile redirect, send them to dashboard
+      if (searchParams.get('incomplete') === '1') {
+        setTimeout(() => {
+          const role = updatedUser.role
+          if (role === 'landlord') navigate('/dashboard/landlord', { replace: true })
+          else if (role === 'pgowner') navigate('/dashboard/pgowner', { replace: true })
+          else navigate('/dashboard/user', { replace: true })
+        }, 1500) // small delay so the success toast is visible
+      }
     } catch (err) {
       showToast(err.message || 'Failed to update profile.', 'error')
     } finally {
@@ -229,7 +244,7 @@ export default function ProfilePage() {
               </div>
               <div>
                 <Label htmlFor="profile-phone">Phone Number</Label>
-                <Input id="profile-phone" name="profile-phone" type="tel" value={editPhone} onChange={(e) => setEditPhone(e.target.value)} placeholder="+91 9876543210" className="mt-1.5 rounded-xl" />
+                <Input id="profile-phone" name="profile-phone" type="tel" value={editPhone} onChange={(e) => setEditPhone(e.target.value)} placeholder="+91 98765 XXXXX" className="mt-1.5 rounded-xl" />
               </div>
               {(user.role === 'user' || user.role === 'student') && (
                 <div>

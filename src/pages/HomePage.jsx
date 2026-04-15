@@ -6,7 +6,7 @@ import { PropertyCard } from '@/components/PropertyCard'
 import { getProperties, getCurrentUser } from '@/lib/store'
 import {
   Building2, Search, Shield, Users, Heart, ArrowRight, GraduationCap, Handshake,
-  Star, MapPin, MessageSquare, CheckCircle2, Quote, ChevronRight, Zap,
+  Star, MapPin, MessageSquare, CheckCircle2, Quote, ChevronRight, Zap, X, LogIn, UserPlus,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -37,28 +37,22 @@ function AnimatedCounter({ target, label }) {
 export default function HomePage() {
   const [properties, setProperties] = useState([])
   const [search, setSearch] = useState('')
+  const [user, setUser] = useState(null)
+  const [loginPromptOpen, setLoginPromptOpen] = useState(false)
+  const navigate = useNavigate()
   const pageRef = useRef(null)
   const featuresRef = useRef(null)
   const listingsRef = useRef(null)
-  const navigate = useNavigate()
 
   useEffect(() => {
     let active = true
-    async function checkUser() {
-      try {
-        const current = await getCurrentUser()
-        if (active && current) {
-          if (current.role === 'landlord') navigate('/dashboard/landlord', { replace: true })
-          else if (current.role === 'pgowner') navigate('/dashboard/pgowner', { replace: true })
-          else navigate('/dashboard/user', { replace: true })
-        }
-      } catch (_) {
-        // Session check failed — stay on home
-      }
-    }
-    checkUser()
+    getCurrentUser().then(u => {
+      if (active) setUser(u)
+    })
     return () => { active = false }
-  }, [navigate])
+  }, [])
+
+
 
   useEffect(() => {
     let active = true
@@ -206,9 +200,9 @@ export default function HomePage() {
             </p>
 
             <div className="hero-cta mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-              <Link to="/register">
+              <Link to={user ? (user.role === 'landlord' ? '/dashboard/landlord' : user.role === 'pgowner' ? '/dashboard/pgowner' : '/dashboard/user') : "/register"}>
                 <Button size="lg" className="h-12 rounded-xl px-8 text-base shadow-lg shadow-primary/20 transition-all hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5">
-                  Get Started Free
+                  {user ? 'Go to Dashboard' : 'Get Started Free'}
                 </Button>
               </Link>
               <a href="#listings">
@@ -391,13 +385,22 @@ export default function HomePage() {
             <div className="mt-14">
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {unifiedListings.map((p) => (
-                  <div key={p.id} className="listing-card">
+                  <div key={p.id} className="listing-card relative">
                     <PropertyCard property={p} />
+                    {/* Overlay for unauthenticated users — sits above the card, intercepts all clicks */}
+                    {!user && (
+                      <div
+                        aria-label="Login required to view details"
+                        className="absolute inset-0 z-10 cursor-pointer rounded-2xl"
+                        onClick={() => setLoginPromptOpen(true)}
+                      />
+                    )}
                   </div>
                 ))}
               </div>
             </div>
           )}
+
 
           {filtered.length === 0 && (
             <div className="mt-20 text-center">
@@ -407,9 +410,9 @@ export default function HomePage() {
           )}
 
           <div className="mt-14 text-center">
-            <Link to="/register">
+            <Link to={user ? (user.role === 'landlord' ? '/dashboard/landlord' : user.role === 'pgowner' ? '/dashboard/pgowner' : '/dashboard/user') : "/register"}>
               <Button variant="outline" size="lg" className="rounded-xl">
-                Sign up to see all listings
+                {user ? 'Go to your dashboard' : 'Sign up to see all listings'}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
@@ -431,9 +434,9 @@ export default function HomePage() {
                 Join 500+ students who found their home through Homizgo. It takes less than a minute.
               </p>
               <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-                <Link to="/register">
+                <Link to={user ? (user.role === 'landlord' ? '/dashboard/landlord' : user.role === 'pgowner' ? '/dashboard/pgowner' : '/dashboard/user') : "/register"}>
                   <Button size="lg" variant="secondary" className="rounded-xl bg-primary-foreground text-primary hover:bg-primary-foreground/90">
-                    Create Free Account
+                    {user ? 'View My Dashboard' : 'Create Free Account'}
                   </Button>
                 </Link>
                 <a href="#listings">
@@ -489,6 +492,69 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
+
+      {/* Login Prompt Modal — shown when unauthenticated user clicks a property card */}
+      {loginPromptOpen && (
+        <div
+          className="fixed inset-0 z-[999] flex items-center justify-center p-4"
+          style={{ backdropFilter: 'blur(8px)', backgroundColor: 'rgba(0,0,0,0.55)' }}
+          onClick={() => setLoginPromptOpen(false)}
+        >
+          <div
+            className="relative w-full max-w-md overflow-hidden rounded-3xl border bg-card shadow-2xl shadow-primary/20"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="absolute top-8 right-8 h-32 w-32 rounded-full bg-primary/5 blur-2xl pointer-events-none" />
+
+            {/* Close button */}
+            <button
+              onClick={() => setLoginPromptOpen(false)}
+              className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-muted-foreground hover:bg-primary/10 hover:text-primary transition-all"
+              aria-label="Close dialog"
+            >
+              <X className="h-4 w-4" />
+            </button>
+
+            <div className="px-8 pb-8 pt-10">
+              {/* Icon */}
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 mb-5">
+                <Building2 className="h-8 w-8 text-primary" />
+              </div>
+
+              <h2 className="font-heading text-2xl font-bold text-foreground">
+                Unlock Full Details
+              </h2>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                Create a free account or log in to view complete property details, photos, pricing, and chat directly with owners.
+              </p>
+
+              <div className="mt-6 flex flex-col gap-3">
+                <Button
+                  size="lg"
+                  className="w-full rounded-xl shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5"
+                  onClick={() => navigate('/register')}
+                >
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  Create Free Account
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="w-full rounded-xl"
+                  onClick={() => navigate('/login')}
+                >
+                  <LogIn className="mr-2 h-4 w-4" />
+                  Log In
+                </Button>
+              </div>
+
+              <p className="mt-5 text-center text-xs text-muted-foreground">
+                100% free &bull; No brokerage &bull; Built for students
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
