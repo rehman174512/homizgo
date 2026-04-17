@@ -200,11 +200,13 @@ export default function HomePage() {
             </p>
 
             <div className="hero-cta mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-              <Link to={user ? (user.role === 'landlord' ? '/dashboard/landlord' : user.role === 'pgowner' ? '/dashboard/pgowner' : '/dashboard/user') : "/register"}>
-                <Button size="lg" className="h-12 rounded-xl px-8 text-base shadow-lg shadow-primary/20 transition-all hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5">
-                  {user ? 'Go to Dashboard' : 'Get Started Free'}
-                </Button>
-              </Link>
+              {!user && (
+                <Link to="/register">
+                  <Button size="lg" className="h-12 rounded-xl px-8 text-base shadow-lg shadow-primary/20 transition-all hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5">
+                    Get Started Free
+                  </Button>
+                </Link>
+              )}
               <a href="#listings">
                 <Button size="lg" variant="outline" className="h-12 rounded-xl px-8 text-base">
                   <Search className="mr-2 h-5 w-5" />
