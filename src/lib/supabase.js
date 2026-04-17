@@ -13,7 +13,15 @@ export function createClient() {
     return null
   }
   
-  supabaseInstance = createSupabaseClient(url, anonKey)
+  supabaseInstance = createSupabaseClient(url, anonKey, {
+    auth: {
+      flowType: 'pkce',          // Required for OAuth in Vite SPAs on Vercel
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: true,
+      storageKey: 'homizgo-auth',
+    },
+  })
   return supabaseInstance
 }
 

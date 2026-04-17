@@ -32,11 +32,16 @@ export async function signIn(email, password) {
 export async function signInWithGoogle() {
   const supabase = createClient()
   const redirectTo = `${window.location.origin}/auth/callback`
-  console.log('[Auth] Google OAuth redirectTo:', redirectTo)
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo },
+    options: {
+      redirectTo,
+      queryParams: {
+        access_type: 'offline',
+        prompt: 'select_account', // Always show account picker for smooth UX
+      },
+    },
   })
   if (error) throw error
   return data

@@ -81,8 +81,10 @@ export default function RegisterPage() {
 
     setGoogleLoading(true)
     try {
-      // Save role so AuthCallbackPage can assign it
+      // Save role in both storages — localStorage survives tab redirects,
+      // sessionStorage is a fallback for browsers that isolate OAuth tabs
       localStorage.setItem('homigo_pending_role', role)
+      sessionStorage.setItem('homigo_pending_role', role)
       await signInWithGoogle()
       // Browser redirects to Google; loading stays true until redirect
     } catch (err) {
