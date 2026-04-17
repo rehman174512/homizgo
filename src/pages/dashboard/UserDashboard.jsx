@@ -28,7 +28,7 @@ export default function UserDashboard() {
   const navigate = useNavigate()
 
   const [filterType, setFilterType] = useState('all')
-  const [filterMaxPrice, setFilterMaxPrice] = useState(15000)
+  const [filterMaxPrice, setFilterMaxPrice] = useState(500000)
   const [filterFacilities, setFilterFacilities] = useState([])
   const [filterInterested, setFilterInterested] = useState(false)
 
@@ -107,11 +107,11 @@ export default function UserDashboard() {
 
   const landlordListings = filtered.filter((p) => p.ownerRole === 'landlord')
   const pgListings = filtered.filter((p) => p.ownerRole === 'pgowner')
-  const activeFilters = (filterType !== 'all' ? 1 : 0) + (filterMaxPrice < 15000 ? 1 : 0) + filterFacilities.length
+  const activeFilters = (filterType !== 'all' ? 1 : 0) + (filterMaxPrice < 500000 ? 1 : 0) + filterFacilities.length
 
   const clearFilters = () => {
     setFilterType('all')
-    setFilterMaxPrice(15000)
+    setFilterMaxPrice(500000)
     setFilterFacilities([])
     setSearch('')
     setFilterInterested(false)
@@ -246,7 +246,7 @@ export default function UserDashboard() {
                   Max Price: <span className="text-primary font-bold">INR {filterMaxPrice.toLocaleString('en-IN')}</span>
                 </Label>
                 <div className="mt-3">
-                  <Slider value={[filterMaxPrice]} onValueChange={([v]) => setFilterMaxPrice(v)} max={20000} min={1000} step={500} />
+                  <Slider value={[filterMaxPrice]} onValueChange={([v]) => setFilterMaxPrice(v)} max={500000} min={1000} step={500} />
                 </div>
               </div>
               <div>

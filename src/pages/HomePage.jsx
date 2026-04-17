@@ -129,10 +129,10 @@ export default function HomePage() {
   const landlordListings = filtered.filter((p) => p.ownerRole === 'landlord')
   const pgListings = filtered.filter((p) => p.ownerRole === 'pgowner')
 
-  // Unified Gallery: Max 6 properties, 3 PG and 3 Landlord
+  // Unified Gallery: Show all properties
   const unifiedListings = [
-    ...landlordListings.slice(0, 3),
-    ...pgListings.slice(0, 3)
+    ...landlordListings,
+    ...pgListings
   ]
 
   const features = [
