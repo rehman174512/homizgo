@@ -117,12 +117,25 @@ export default function ProfilePage() {
   const handleDeleteAccount = async () => {
     setDeleteLoading(true)
     try {
-      // Call Edge Function — uses service role key server-side to delete auth user (works in production)
-      const { error } = await supabase.functions.invoke('delete-account', {
+      // Get the current session token to send to the Edge Function
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.access_token) throw new Error('Not authenticated. Please log in again.')
+
+      // Call the Edge Function with explicit authorization header
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+      const response = await fetch(`${supabaseUrl}/functions/v1/delete-account`, {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json',
+          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+        },
       })
 
-      if (error) throw new Error(error.message || 'Failed to delete account.')
+      if (!response.ok) {
+        const body = await response.json().catch(() => ({}))
+        throw new Error(body.error || `Server error (${response.status})`)
+      }
 
       await supabase.auth.signOut()
       window.dispatchEvent(new CustomEvent('homizgo-user-updated', { detail: null }))
