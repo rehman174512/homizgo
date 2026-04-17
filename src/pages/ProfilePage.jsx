@@ -117,29 +117,13 @@ export default function ProfilePage() {
   const handleDeleteAccount = async () => {
     setDeleteLoading(true)
     try {
-      // 1. Delete user's properties
-      await supabase.from('properties').delete().eq('owner_id', user.id)
+      // Call Edge Function — uses service role key server-side to delete auth user (works in production)
+      const { error } = await supabase.functions.invoke('delete-account', {
+        method: 'POST',
+      })
 
-      // 2. Delete user's interests
-      await supabase.from('interests').delete().eq('user_id', user.id)
+      if (error) throw new Error(error.message || 'Failed to delete account.')
 
-      // 3. Delete user's chat threads
-      const { data: participants } = await supabase
-        .from('thread_participants')
-        .select('thread_id')
-        .eq('user_id', user.id)
-      
-      if (participants && participants.length > 0) {
-        const threadIds = participants.map(p => p.thread_id)
-        await supabase.from('chat_threads').delete().in('id', threadIds)
-      }
-
-      // 4. Delete profile row
-      await supabase.from('users').delete().eq('id', user.id)
-      
-      // 5. Call RPC to delete Auth user (you must create this function in Supabase SQL editor)
-      await supabase.rpc('delete_user')
-      
       await supabase.auth.signOut()
       window.dispatchEvent(new CustomEvent('homizgo-user-updated', { detail: null }))
       navigate('/')
