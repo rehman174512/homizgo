@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { getMyProperties, addProperty, updateProperty, deleteProperty, getUsers, getPropertyInterests, subscribeToInterests } from '@/lib/store'
+import { getMyProperties, addProperty, updateProperty, deleteProperty, getUsers, getPropertyInterests, subscribeToInterests, subscribeToProperties } from '@/lib/store'
 import { useProfileGuard } from '@/hooks/useProfileGuard'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { Navbar } from '@/components/Navbar'
@@ -41,13 +41,18 @@ export default function PGOwnerDashboard() {
     load()
 
     // Real-time interests subscription
-    const unsub = subscribeToInterests(() => {
+    const unsubInterests = subscribeToInterests(() => {
+      if (active) refreshProperties(user.id)
+    })
+    // Real-time properties subscription
+    const unsubProps = subscribeToProperties(() => {
       if (active) refreshProperties(user.id)
     })
 
     return () => { 
       active = false
-      unsub()
+      unsubInterests()
+      unsubProps()
     }
   }, [profileReady, user])
 

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { getMyProperties, addProperty, updateProperty, deleteProperty, getUsers, subscribeToInterests } from '@/lib/store'
+import { getMyProperties, addProperty, updateProperty, deleteProperty, getUsers, subscribeToInterests, subscribeToProperties } from '@/lib/store'
 import { useProfileGuard } from '@/hooks/useProfileGuard'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { Navbar } from '@/components/Navbar'
@@ -40,13 +40,17 @@ export default function LandlordDashboard() {
     load()
 
     // Real-time interests subscription
-    const unsub = subscribeToInterests(() => {
+    const unsubInterests = subscribeToInterests(() => {
+      if (active) refreshProperties(user.id)
+    })
+    const unsubProps = subscribeToProperties(() => {
       if (active) refreshProperties(user.id)
     })
 
     return () => { 
       active = false
-      unsub()
+      unsubInterests()
+      unsubProps()
     }
   }, [profileReady, user])
 
