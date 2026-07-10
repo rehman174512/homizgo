@@ -387,7 +387,7 @@ export default function HomePage() {
             <div className="mt-14">
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {unifiedListings.map((p) => (
-                  <div key={p.id} className="listing-card relative">
+                  <div key={p.id} className="listing-card relative h-full">
                     <PropertyCard property={p} />
                     {/* Overlay for unauthenticated users — sits above the card, intercepts all clicks */}
                     {!user && (

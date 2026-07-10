@@ -44,7 +44,7 @@ const propertyColors = [
  * @param {boolean} isLiked - whether current user has saved/hearted this property
  * @param {function} onToggleLike - (propertyId, newState) => void, called after toggling
  */
-export function PropertyCard({ property, index = 0, isLiked = false, onToggleLike }) {
+export function PropertyCard({ property, index = 0, isLiked = false, onToggleLike, className }) {
   const isPG = property.ownerRole === 'pgowner'
   const gradient = propertyColors[index % propertyColors.length]
   const navigate = useNavigate()
@@ -88,10 +88,10 @@ export function PropertyCard({ property, index = 0, isLiked = false, onToggleLik
   }, [property.id, property.ownerId, property.ownerName, navigate])
 
   return (
-    <Link to={`/property/${property.id}`} className="group block">
-      <div className="relative overflow-hidden rounded-2xl border bg-card shadow-sm transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1.5">
+    <Link to={`/property/${property.id}`} className={`group block h-full ${className || ''}`}>
+      <div className="relative overflow-hidden rounded-2xl border bg-card shadow-sm transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1.5 flex flex-col h-full">
         {/* Image area */}
-        <div className="relative h-52 overflow-hidden bg-secondary">
+        <div className="relative h-52 overflow-hidden bg-secondary flex-shrink-0">
           {property.images && property.images.length > 0 ? (
             <img
               src={property.images[0]}
@@ -148,7 +148,7 @@ export function PropertyCard({ property, index = 0, isLiked = false, onToggleLik
         </div>
 
         {/* Content */}
-        <div className="p-5">
+        <div className="p-5 flex flex-col flex-grow">
           <h3 className="font-heading text-lg font-semibold leading-tight text-card-foreground line-clamp-1 group-hover:text-primary transition-colors">
             {property.title}
           </h3>
@@ -204,7 +204,7 @@ export function PropertyCard({ property, index = 0, isLiked = false, onToggleLik
             )}
           </div>
 
-          <div className="mt-4 flex items-center justify-between border-t pt-3 text-xs text-muted-foreground">
+          <div className="mt-auto flex items-center justify-between border-t pt-3 text-xs text-muted-foreground">
             <span className="flex items-center gap-1">
               <MapPin className="h-3 w-3" />
               {property.distanceRange?.toLowerCase().includes('km') ? property.distanceRange : `${property.distanceRange} km`} from campus

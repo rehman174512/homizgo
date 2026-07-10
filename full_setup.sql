@@ -92,6 +92,7 @@ ALTER TABLE public.users ADD COLUMN IF NOT EXISTS gender text;
 ALTER TABLE public.users ADD COLUMN IF NOT EXISTS fcm_token text;
 ALTER TABLE public.users ADD COLUMN IF NOT EXISTS name text;
 ALTER TABLE public.users ADD COLUMN IF NOT EXISTS role text;
+ALTER TABLE public.users ADD COLUMN IF NOT EXISTS preferred_location text;
 
 -- Properties Table
 CREATE TABLE IF NOT EXISTS public.properties (

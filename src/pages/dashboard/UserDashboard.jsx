@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Slider } from '@/components/ui/slider'
-import { Search, SlidersHorizontal, Building2, Users, X, Heart } from 'lucide-react'
+import { Search, SlidersHorizontal, Building2, Users, X, Heart, MapPin } from 'lucide-react'
 
 const ALL_FACILITIES = [
   'WiFi', 'Parking', 'Food', 'Electricity', 'Laundry', 'AC', 'Gym', 'Security',
@@ -102,6 +102,10 @@ export default function UserDashboard() {
     if (filterType !== 'all' && p.ownerRole !== filterType) return false
     if (p.price > filterMaxPrice) return false
     if (filterFacilities.length > 0 && !filterFacilities.every((f) => p.facilities.includes(f))) return false
+    if (user.preferred_location) {
+      const city = user.preferred_location.toLowerCase().trim()
+      if (!p.location.toLowerCase().includes(city)) return false
+    }
     return true
   })
 
@@ -154,10 +158,10 @@ export default function UserDashboard() {
             </div>
             <h1 className="font-heading text-3xl font-bold text-foreground">Find Your Stay</h1>
             <p className="mt-1 text-muted-foreground">
-              {user.gender ? `Hey ${user.name}, browse ${filtered.length} available propert${filtered.length !== 1 ? 'ies' : 'y'}` : `Hey ${user.name}, please complete your profile to view properties.`}
+              {(user.gender && user.preferred_location) ? `Hey ${user.name}, browse ${filtered.length} available propert${filtered.length !== 1 ? 'ies' : 'y'}` : `Hey ${user.name}, please complete your profile to view properties.`}
             </p>
           </div>
-          {user.gender && (
+          {user.gender && user.preferred_location && (
             <Button variant="outline" className="rounded-xl" onClick={() => setShowFilters(!showFilters)}>
               <SlidersHorizontal className="mr-2 h-4 w-4" />
               {showFilters ? 'Hide Filters' : 'Filters'}
@@ -170,15 +174,15 @@ export default function UserDashboard() {
           )}
         </div>
 
-        {!user.gender && (
+        {(!user.gender || !user.preferred_location) && (
           <div className="mt-12 text-center p-8 rounded-2xl border bg-card shadow-sm">
             <h2 className="text-xl font-bold mb-2">Profile Incomplete</h2>
-            <p className="text-muted-foreground mb-4">You need to set your gender to view matching properties.</p>
+            <p className="text-muted-foreground mb-4">You need to complete your profile with gender and preferred location to view properties.</p>
             <Button onClick={() => navigate('/profile')}>Complete Profile</Button>
           </div>
         )}
 
-        {user.gender && (
+        {user.gender && user.preferred_location && (
           <div className="w-full">
             {/* Search bar */}
         <div className="mt-6">
@@ -202,6 +206,22 @@ export default function UserDashboard() {
             </div>
           </div>
         </div>
+
+        {user.preferred_location && (
+          <div className="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border bg-primary/5 border-primary/20 p-4 shadow-sm">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <MapPin className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-primary uppercase tracking-wider">Location Preference</p>
+                <p className="text-sm font-medium text-foreground">
+                  Showing properties in your preferred city: {user.preferred_location}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Filters (gender filter removed) */}
         {showFilters && (
@@ -361,7 +381,7 @@ export default function UserDashboard() {
           </div>
         )}
 
-        {!loading && user.gender && filtered.length === 0 && (
+        {!loading && user.gender && user.preferred_location && filtered.length === 0 && (
           <div className="mt-20 text-center">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-secondary">
               {filterInterested
@@ -369,14 +389,20 @@ export default function UserDashboard() {
                 : <Search className="h-8 w-8 text-muted-foreground/40" />}
             </div>
             <p className="text-lg font-semibold text-foreground">
-              {filterInterested ? 'No interested properties yet' : 'No properties found'}
+              {filterInterested 
+                ? 'No interested properties found' 
+                : `No properties found in ${user.preferred_location} yet`}
             </p>
             <p className="mt-1 text-muted-foreground">
-              {filterInterested ? 'Heart a property to save it here.' : 'Try adjusting your filters or search criteria.'}
+              {filterInterested 
+                ? 'Heart a property to save it here.' 
+                : 'Try adjusting your filters or search criteria.'}
             </p>
-            <Button variant="outline" className="mt-4 rounded-xl" onClick={clearFilters}>
-              Clear Filters
-            </Button>
+            <div className="mt-6 flex justify-center gap-3">
+              <Button variant="outline" className="mt-4 rounded-xl" onClick={clearFilters}>
+                Clear Filters
+              </Button>
+            </div>
           </div>
         )}
           </div>

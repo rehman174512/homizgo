@@ -42,6 +42,7 @@ export function useProfileGuard(requiredRole = null) {
         if (!current.name || current.name.trim() === '' || current.name === 'User') missing.push('Full Name')
         if (!current.phone || current.phone.trim() === '') missing.push('Phone Number')
         if (isStudent && (!current.gender || current.gender.trim() === '')) missing.push('Gender')
+        if (isStudent && (!current.preferred_location || current.preferred_location.trim() === '')) missing.push('Preferred Location')
 
         if (missing.length > 0) {
           // Store the missing fields so ProfilePage can display a banner

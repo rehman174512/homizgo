@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
   User, Mail, Phone, Shield, Pencil, Trash2,
-  Save, X, AlertTriangle, CheckCircle2,
+  Save, X, AlertTriangle, CheckCircle2, MapPin,
 } from 'lucide-react'
 
 export default function ProfilePage() {
@@ -24,6 +24,7 @@ export default function ProfilePage() {
   const [editName, setEditName] = useState('')
   const [editPhone, setEditPhone] = useState('')
   const [editGender, setEditGender] = useState('')
+  const [editLocation, setEditLocation] = useState('')
   const [saving, setSaving] = useState(false)
 
 
@@ -59,6 +60,7 @@ export default function ProfilePage() {
       setEditName(resolved.name || '')
       setEditPhone(resolved.phone || '')
       setEditGender(resolved.gender || '')
+      setEditLocation(resolved.preferred_location || '')
       setLoading(false)
     }
     load().catch(() => navigate('/login'))
@@ -78,10 +80,21 @@ export default function ProfilePage() {
     try {
       const { error } = await supabase
         .from('users')
-        .update({ name: editName.trim(), phone: editPhone.trim(), gender: editGender })
+        .update({
+          name: editName.trim(),
+          phone: editPhone.trim(),
+          gender: editGender,
+          preferred_location: editLocation.trim(),
+        })
         .eq('id', user.id)
       if (error) throw error
-      const updatedUser = { ...user, name: editName.trim(), phone: editPhone.trim(), gender: editGender }
+      const updatedUser = {
+        ...user,
+        name: editName.trim(),
+        phone: editPhone.trim(),
+        gender: editGender,
+        preferred_location: editLocation.trim(),
+      }
       setUser(updatedUser)
       setEditing(false)
 
@@ -210,7 +223,7 @@ export default function ProfilePage() {
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
                 <h2 className="font-heading text-xl font-bold text-card-foreground truncate">{user.name}</h2>
-                {(!user.phone || (!user.gender && (user.role === 'user' || user.role === 'student'))) && (
+                {(!user.phone || ((!user.gender || !user.preferred_location) && (user.role === 'user' || user.role === 'student'))) && (
                   <span className="inline-flex flex-shrink-0 items-center gap-1 rounded-full bg-destructive/10 px-2 py-0.5 text-[10px] font-bold text-destructive uppercase tracking-wider">
                     <AlertTriangle className="h-3 w-3" /> Incomplete
                   </span>
@@ -244,20 +257,33 @@ export default function ProfilePage() {
                 <Input id="profile-phone" name="profile-phone" type="tel" value={editPhone} onChange={(e) => setEditPhone(e.target.value)} placeholder="+91 98765 XXXXX" className="mt-1.5 rounded-xl" />
               </div>
               {(user.role === 'user' || user.role === 'student') && (
-                <div>
-                  <Label htmlFor="profile-gender">Gender</Label>
-                  <select
-                    id="profile-gender"
-                    name="profile-gender"
-                    value={editGender}
-                    onChange={(e) => setEditGender(e.target.value)}
-                    className="mt-1.5 flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                  >
-                    <option value="">Select gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                  </select>
-                </div>
+                <>
+                  <div>
+                    <Label htmlFor="profile-gender">Gender</Label>
+                    <select
+                      id="profile-gender"
+                      name="profile-gender"
+                      value={editGender}
+                      onChange={(e) => setEditGender(e.target.value)}
+                      className="mt-1.5 flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    >
+                      <option value="">Select gender</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                    </select>
+                  </div>
+                  <div>
+                    <Label htmlFor="profile-location">Preferred Location (City)</Label>
+                    <Input
+                      id="profile-location"
+                      name="profile-location"
+                      value={editLocation}
+                      onChange={(e) => setEditLocation(e.target.value)}
+                      placeholder="e.g. Bangalore, Delhi, Mumbai"
+                      className="mt-1.5 rounded-xl"
+                    />
+                  </div>
+                </>
               )}
               <Button className="rounded-xl shadow-sm shadow-primary/20" onClick={handleSaveProfile} disabled={saving}>
                 {saving ? (
@@ -276,7 +302,10 @@ export default function ProfilePage() {
               <InfoRow icon={Mail} label="Email" value={user.email} />
               <InfoRow icon={Phone} label="Phone" value={user.phone || 'Not set'} />
               {(user.role === 'user' || user.role === 'student') && (
-                <InfoRow icon={Shield} label="Gender" value={user.gender ? user.gender.charAt(0).toUpperCase() + user.gender.slice(1) : 'Not set'} />
+                <>
+                  <InfoRow icon={Shield} label="Gender" value={user.gender ? user.gender.charAt(0).toUpperCase() + user.gender.slice(1) : 'Not set'} />
+                  <InfoRow icon={MapPin} label="Preferred Location" value={user.preferred_location || 'Not set'} />
+                </>
               )}
             </div>
           )}

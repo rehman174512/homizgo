@@ -252,7 +252,7 @@ export function Navbar({ hideBottomNav = false }) {
                 >
                   <div className="relative flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-bold">
                     {user.name.charAt(0)}
-                    {(!user.phone || (!user.gender && (user.role === 'user' || user.role === 'student'))) && (
+                    {(!user.phone || ((!user.gender || !user.preferred_location) && (user.role === 'user' || user.role === 'student'))) && (
                       <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5 rounded-full bg-destructive ring-2 ring-background"></span>
                     )}
                   </div>
@@ -287,7 +287,7 @@ export function Navbar({ hideBottomNav = false }) {
                 onClick={() => setMobileOpen(false)}
               >
                 {user.name.charAt(0)}
-                {(!user.phone || (!user.gender && (user.role === 'user' || user.role === 'student'))) && (
+                {(!user.phone || ((!user.gender || !user.preferred_location) && (user.role === 'user' || user.role === 'student'))) && (
                   <span className="absolute -top-0.5 -right-0.5 flex h-3 w-3 rounded-full bg-destructive border-2 border-background"></span>
                 )}
               </Link>

@@ -6,6 +6,7 @@ create table public.users (
   email text not null,
   name text,
   role text default 'student',
+  preferred_location text,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
