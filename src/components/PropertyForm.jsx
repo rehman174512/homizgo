@@ -93,6 +93,7 @@ export function PropertyForm({ onSubmit, onCancel, initial, isPG = false, isLoad
   const [images, setImages] = useState(initial?.images || [])
   const [isUploading, setIsUploading] = useState(false)
   const [uploadError, setUploadError] = useState('')
+  const [error, setError] = useState('')
   // Local preview blobs (before upload completes)
   const [previews, setPreviews] = useState([])
   const fileInputRef = useRef(null)
@@ -156,6 +157,17 @@ export function PropertyForm({ onSubmit, onCancel, initial, isPG = false, isLoad
 
   const handleSubmit = (e) => {
     e.preventDefault()
+    setError('')
+
+    if (!location.trim()) {
+      setError('Location / Address is required.')
+      return
+    }
+    if (!mapEmbed || !mapEmbed.trim()) {
+      setError('Search Location / Google Maps Link is required. Please type an address or paste a link in the Maps section, then click "Preview Map" or press Enter to set the map location.')
+      return
+    }
+
     const data = {
       title,
       propertyFor,
@@ -195,6 +207,12 @@ export function PropertyForm({ onSubmit, onCancel, initial, isPG = false, isLoad
           <X className="h-5 w-5" />
         </Button>
       </div>
+
+      {error && (
+        <div className="rounded-xl bg-destructive/10 p-3.5 text-sm font-medium text-destructive">
+          {error}
+        </div>
+      )}
 
       <div className="grid gap-5 md:grid-cols-2">
         {/* Title */}

@@ -85,6 +85,8 @@ export default function RegisterPage() {
       // sessionStorage is a fallback for browsers that isolate OAuth tabs
       localStorage.setItem('homigo_pending_role', role)
       sessionStorage.setItem('homigo_pending_role', role)
+      localStorage.setItem('homigo_pending_gender', gender)
+      sessionStorage.setItem('homigo_pending_gender', gender)
       await signInWithGoogle()
       // Browser redirects to Google; loading stays true until redirect
     } catch (err) {

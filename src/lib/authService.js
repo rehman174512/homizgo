@@ -84,6 +84,6 @@ export async function getCurrentUser() {
     ...(userProfile || {}),
     role: resolvedRole,
     name: userProfile?.name || fallbackName,
-    gender: userProfile?.gender || ((resolvedRole === 'student' || resolvedRole === 'user') ? 'male' : null),
+    gender: userProfile?.gender || null,
   }
 }

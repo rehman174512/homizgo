@@ -64,7 +64,7 @@ export default function AuthCallbackPage() {
     // 3. Fetch or create the profile row
     let { data: profile } = await supabase
       .from('users')
-      .select('id, role, name')
+      .select('id, role, name, gender')
       .eq('id', user.id)
       .maybeSingle()
 
@@ -73,23 +73,31 @@ export default function AuthCallbackPage() {
     const pendingRole =
       localStorage.getItem('homigo_pending_role') ||
       sessionStorage.getItem('homigo_pending_role')
+    const pendingGender =
+      localStorage.getItem('homigo_pending_gender') ||
+      sessionStorage.getItem('homigo_pending_gender')
 
-    if (pendingRole) {
+    if (pendingRole || pendingGender) {
       localStorage.removeItem('homigo_pending_role')
       sessionStorage.removeItem('homigo_pending_role')
+      localStorage.removeItem('homigo_pending_gender')
+      sessionStorage.removeItem('homigo_pending_gender')
 
       // Only update if profile doesn't already have a specific role
       if (!profile || profile.role === 'student' || profile.role === 'user') {
+        const updates = {
+          terms_accepted: true,
+          privacy_policy_accepted: true,
+          cookie_policy_accepted: true,
+        }
+        if (pendingRole) updates.role = pendingRole
+        if (pendingGender) updates.gender = pendingGender
+
         const { data: updatedProfile, error: updateError } = await supabase
           .from('users')
-          .update({
-            role: pendingRole,
-            terms_accepted: true,
-            privacy_policy_accepted: true,
-            cookie_policy_accepted: true,
-          })
+          .update(updates)
           .eq('id', user.id)
-          .select('id, role, name')
+          .select('id, role, name, gender')
           .single()
 
         if (!updateError && updatedProfile) {

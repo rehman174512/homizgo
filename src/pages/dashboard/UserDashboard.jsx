@@ -93,6 +93,15 @@ export default function UserDashboard() {
 
   const filtered = properties.filter((p) => {
     if (!p.available) return false
+
+    // Strict frontend gender filtering to prevent any misplaced listings
+    const propGender = (p.propertyFor || '').toLowerCase();
+    if (user.gender === 'male') {
+      if (propGender !== 'boys' && propGender !== 'male' && propGender !== 'both') return false
+    } else if (user.gender === 'female') {
+      if (propGender !== 'girls' && propGender !== 'female' && propGender !== 'both') return false
+    }
+
     if (filterInterested && !savedIds.includes(p.id)) return false
     if (
       search &&
